@@ -9,11 +9,11 @@ using UnityEngine;
 public class LoadByDatabase : ILoad
 {
     private string spritesPath = "Assets/Sprites/";
-    public Task<List<Sprite>> Load()
+    
+    public async Task<List<Sprite>> Load()
     {
-        var tcs = new TaskCompletionSource<List<Sprite>>();
+        var sprites = new List<Sprite>();
         
-        var m_sprites = new List<Sprite>();
         DateTime today = DateTime.Now;
 
         var info = new DirectoryInfo(spritesPath);
@@ -23,23 +23,21 @@ public class LoadByDatabase : ILoad
         
         foreach (var file in fileInfo)
         {
-            var difference = (today - file.CreationTime).ToString("hh\\:mm");;
+            var difference = (today - file.CreationTime).ToString("dd\\:hh\\:mm");;
             Debug.Log(file.Name + " " + difference);
-            m_sprites.Add(LoadSprite(spritesPath + file.Name));
+            sprites.Add(await LoadSprite(spritesPath + file.Name));
         }
         
-        tcs.SetResult(m_sprites);
-
-        return tcs.Task;
+        return sprites;
     }
     
     
-    public Sprite LoadSprite(string file)
+    private async Task<Sprite> LoadSprite(string file)
     {
         AssetDatabase.ImportAsset(file);
         
         Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D >(file);
 
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        return await LoaderHelper.CreateSprite(texture);
     }
 }

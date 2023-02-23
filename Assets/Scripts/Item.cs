@@ -1,7 +1,5 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-
 
 public class Item : MonoBehaviour
 {
@@ -15,5 +13,4 @@ public class Item : MonoBehaviour
     public string Name;
     public string Time;
     public Image Image;
-
 }

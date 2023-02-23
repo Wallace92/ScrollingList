@@ -8,28 +8,22 @@ public class LoadByAddressable : ILoad
 {
     public async Task<List<Sprite>> Load()
     {
-        var tcs = new TaskCompletionSource<List<Sprite>>();
-
         var handle = Addressables.LoadAssetsAsync<Texture2D>("item", null);
-        handle.Completed += operation =>
+        var _ = await handle.Task;
+
+        if (handle.Status != AsyncOperationStatus.Succeeded)
         {
-            if (operation.Status != AsyncOperationStatus.Succeeded)
-            {
-                Debug.LogWarning("Some assets did not load.");
-                tcs.SetResult(null);
-                return;
-            }
+            Debug.LogWarning("Some assets did not load.");
+            return null;
+        }
 
-            var sprites = new List<Sprite>();
-            foreach (Texture2D texture in operation.Result)
-            {
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-                sprites.Add(sprite);
-            }
+        var sprites = new List<Sprite>();
+        foreach (Texture2D texture in handle.Result)
+        {
+            sprites.Add(await LoaderHelper.CreateSprite(texture));
+        }
 
-            tcs.SetResult(sprites);
-        };
-
-        return await tcs.Task;
+        return sprites;
     }
+
 }
