@@ -9,16 +9,9 @@ using UnityEditor.AddressableAssets.Settings;
 
 public class RefreshByAddressable : IRefresh
 {
-    private string spritesPath;
-    private string groupName;
-    private string label;
+    private readonly ContentData m_contentData;
 
-    public RefreshByAddressable(string spritesPath, string groupName, string label)
-    {
-        this.spritesPath = spritesPath;
-        this.groupName = groupName;
-        this.label = label;
-    }
+    public RefreshByAddressable(ContentData contentData) => m_contentData = contentData;
 
     public async Task<List<ItemData>> Refresh(ILoad loader)
     {
@@ -32,14 +25,14 @@ public class RefreshByAddressable : IRefresh
     {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         
-        AddressableAssetGroup group = settings.FindGroup(groupName);
+        AddressableAssetGroup group = settings.FindGroup(m_contentData.GroupName);
         
         var existingEntries = group.entries.ToArray();
-        var fileInfo = LoaderHelper.GetFileInfo(spritesPath);
+        var fileInfo = LoaderHelper.GetFileInfo(m_contentData.Path);
 
         foreach (var file in fileInfo)
         {
-            var pathToObject = spritesPath + file.Name;
+            var pathToObject = m_contentData.Path + file.Name;
             
             if (IsEntryExist(pathToObject, existingEntries))
                 continue;
@@ -54,7 +47,7 @@ public class RefreshByAddressable : IRefresh
     private bool IsEntryExist(string pathToObject, AddressableAssetEntry[] existingEntries)
     {
         var isOldObject = existingEntries.Any(existingEntry => existingEntry.address == pathToObject);
-        var isLabelAssigned = existingEntries.Any(existingEntry => existingEntry.labels.Contains(label));
+        var isLabelAssigned = existingEntries.Any(existingEntry => existingEntry.labels.Contains(m_contentData.Label));
         return isOldObject && isLabelAssigned;
     }
 
@@ -70,7 +63,7 @@ public class RefreshByAddressable : IRefresh
         
         var entry = settings.CreateOrMoveEntry(guid, group);
 
-        entry.labels.Add(label);
+        entry.labels.Add(m_contentData.Label);
         entry.address = pathToObject;
 
         return entry;

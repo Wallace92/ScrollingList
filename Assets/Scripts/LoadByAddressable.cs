@@ -7,9 +7,13 @@ using UnityEngine.AddressableAssets;
 
 public class LoadByAddressable : ILoad
 {
+    private readonly string m_label;
+    
+    public LoadByAddressable(string label) => m_label = label;
+
     public async Task<List<ItemData>> LoadItemsData()
     {
-        var locations = await Addressables.LoadResourceLocationsAsync("item").Task;
+        var locations = await Addressables.LoadResourceLocationsAsync(m_label).Task;
         
         var itemsData = new List<ItemData>();
 

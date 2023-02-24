@@ -12,9 +12,14 @@ public class ScrollingListManager : MonoBehaviour
     [SerializeField]
     private bool m_loadUsingAddressables;
 
-    private ILoad Loader => m_loadUsingAddressables ? new LoadByAddressable() : new LoadByDatabase();
+    private readonly ContentData m_contentData = new ContentData("Assets/Content/", "Content", "item");
+
+    private ILoad Loader => m_loadUsingAddressables
+        ? new LoadByAddressable(m_contentData.Label)
+        : new LoadByDatabase(m_contentData.Path);
+    
     private IRefresh Refresher => m_loadUsingAddressables
-        ? new RefreshByAddressable("Assets/Content/", "Content", "item")
+        ? new RefreshByAddressable(m_contentData)
         : new RefreshByDatabase();
 
     private Item m_item;
