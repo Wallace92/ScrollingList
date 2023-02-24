@@ -9,27 +9,26 @@ using UnityEngine;
 public class LoadByDatabase : ILoad
 {
     private string spritesPath = "Assets/Sprites/";
-    
-    public async Task<List<Sprite>> Load()
+
+    public async Task<List<ItemData>> LoadItemsData()
     {
-        var sprites = new List<Sprite>();
+        var itemsData = new List<ItemData>();
+        var fileInfo = LoaderHelper.GetFileInfo(spritesPath);
         
         DateTime today = DateTime.Now;
-
-        var info = new DirectoryInfo(spritesPath);
-        
-        var fileInfo = info.GetFiles().
-            Where(file => file.Extension != ".meta");
         
         foreach (var file in fileInfo)
         {
-            var difference = (today - file.CreationTime).ToString("dd\\:hh\\:mm");;
-            Debug.Log(file.Name + " " + difference);
-            sprites.Add(await LoadSprite(spritesPath + file.Name));
+            var difference = (today - file.CreationTime).ToString("dd\\:hh\\:mm");
+            var sprite = await LoadSprite(spritesPath + file.Name);
+            var itemData = new ItemData(file.Name, difference, sprite);
+            
+            itemsData.Add(itemData);
         }
-        
-        return sprites;
+
+        return itemsData;
     }
+
     
     
     private async Task<Sprite> LoadSprite(string file)

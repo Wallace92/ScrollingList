@@ -1,29 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class LoadByAddressable : ILoad
 {
-    public async Task<List<Sprite>> Load()
+    public async Task<List<ItemData>> LoadItemsData()
     {
-        var handle = Addressables.LoadAssetsAsync<Texture2D>("item", null);
-        var _ = await handle.Task;
+        var locations = await Addressables.LoadResourceLocationsAsync("item").Task;
+        
+        var itemsData = new List<ItemData>();
 
-        if (handle.Status != AsyncOperationStatus.Succeeded)
+        DateTime today = DateTime.Now;
+
+        foreach (var location in locations)
         {
-            Debug.LogWarning("Some assets did not load.");
-            return null;
+            var path = location.InternalId;
+            var filePath = Application.dataPath + "/" + path.Replace("Assets", "");
+            var fileInfo = new FileInfo(filePath);
+           
+            var textureHandle  = Addressables.LoadAssetAsync<Texture2D>(location);
+            var texture = await textureHandle.Task;
+            
+            var difference = (today - fileInfo.CreationTime).ToString("dd\\:hh\\:mm");
+            var sprite = await LoaderHelper.CreateSprite(texture);
+            
+            var itemData = new ItemData(fileInfo.Name, difference, sprite);
+            
+            itemsData.Add(itemData);
         }
 
-        var sprites = new List<Sprite>();
-        foreach (Texture2D texture in handle.Result)
-        {
-            sprites.Add(await LoaderHelper.CreateSprite(texture));
-        }
-
-        return sprites;
+        return itemsData;
     }
-
 }

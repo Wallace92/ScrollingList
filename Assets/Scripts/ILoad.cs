@@ -4,5 +4,10 @@ using UnityEngine;
 
 public interface ILoad
 { 
-    Task<List<Sprite>> Load();
+    Task<List<ItemData>> LoadItemsData();
+}
+
+public interface IRefresh
+{
+    Task<List<ItemData>> Refresh(ILoad loader);
 }
