@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ScrollingListManager : MonoBehaviour
 {
-    public ScrollRect ScrollRect;
-    public GameObject ItemPrefab;
-
     [SerializeField]
     private bool m_loadUsingAddressables;
     
@@ -20,30 +16,31 @@ public class ScrollingListManager : MonoBehaviour
         ? new RefreshByAddressable(m_contentData)
         : new RefreshByDatabase();
 
+    private ItemPool m_itemPool;
+    
     private readonly ContentData m_contentData = new ContentData("Assets/Content/", "Content", "item");
-
+    
     public void Refresh() => RefreshAsync();
+
+    private void Awake() => m_itemPool = gameObject.GetComponent<ItemPool>();
 
     private async void Start()
     {
         var itemsData = await Refresher.Refresh(Loader);
         m_scrollList = InstantiateScrollList(itemsData);
-
     }
 
     private List<Item> InstantiateScrollList(List<ItemData> itemsData)
     {
         var scrollList = new List<Item>();
-        
+
         foreach (var itemData in itemsData)
         {
-            var itemGameObject = Instantiate(ItemPrefab, ScrollRect.content.transform);
-            var item = itemGameObject.GetComponent<Item>();
+            var item = m_itemPool.ItemsPool.Get();
             item.AssignData(itemData);
-            
             scrollList.Add(item);
         }
-
+        
         return scrollList;
     }
 
@@ -52,11 +49,10 @@ public class ScrollingListManager : MonoBehaviour
          var itemsData = await Refresher.Refresh(Loader);
 
          foreach (var item in m_scrollList)
-         {
              Destroy(item.gameObject);
-         }
+         
          m_scrollList.Clear();
-
+         
          m_scrollList = InstantiateScrollList(itemsData);
     }
 }
