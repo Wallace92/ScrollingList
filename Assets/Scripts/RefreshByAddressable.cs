@@ -1,19 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.VersionControl;
+
 
 public class RefreshByAddressable : IRefresh
 {
-    private string spritesPath = "Assets/Content/";
+    private string spritesPath;
+    private string groupName;
+    private string label;
+
+    public RefreshByAddressable(string spritesPath, string groupName, string label)
+    {
+        this.spritesPath = spritesPath;
+        this.groupName = groupName;
+        this.label = label;
+    }
+
     public async Task<List<ItemData>> Refresh(ILoad loader)
     {
-        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        AssetDatabase.SaveAssets();
+        
+        RefreshAddressableGroup();
+        return await loader.LoadItemsData();
+    }
 
-        string groupName = "Content";
+    private void RefreshAddressableGroup()
+    {
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
         
         AddressableAssetGroup group = settings.FindGroup(groupName);
         
@@ -22,29 +39,38 @@ public class RefreshByAddressable : IRefresh
 
         foreach (var file in fileInfo)
         {
-            // "Assets/Content/lab02.png" - extension!
+            var pathToObject = spritesPath + file.Name;
             
-            if (existingEntries.Any(existingEntry => existingEntry.address == spritesPath + file.Name) &&  existingEntries.Any(existingEntry => existingEntry.labels.Contains("item")))
+            if (IsEntryExist(pathToObject, existingEntries))
                 continue;
             
-            var entry = AddEntry(spritesPath + file.Name, group, settings);
+            var entry = AddEntry(pathToObject, group, settings);
 
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
             AssetDatabase.SaveAssets();
         }
-        
-        AssetDatabase.Refresh();
-
-        return await loader.LoadItemsData();
     }
 
-    private AddressableAssetEntry AddEntry(string pathToObject, 
-        AddressableAssetGroup group, AddressableAssetSettings settings)
+    private bool IsEntryExist(string pathToObject, AddressableAssetEntry[] existingEntries)
     {
-        var guid = AssetDatabase.AssetPathToGUID(pathToObject);
+        var isOldObject = existingEntries.Any(existingEntry => existingEntry.address == pathToObject);
+        var isLabelAssigned = existingEntries.Any(existingEntry => existingEntry.labels.Contains(label));
+        return isOldObject && isLabelAssigned;
+    }
+
+    private AddressableAssetEntry AddEntry(string pathToObject, AddressableAssetGroup group, AddressableAssetSettings settings)
+    {
+        //important for guid empty possibility
+        AssetDatabase.Refresh();
+        
+        var guid = AssetDatabase.AssetPathToGUID(pathToObject, AssetPathToGUIDOptions.OnlyExistingAssets);
+
+        if (string.IsNullOrEmpty(guid))
+            throw new ArgumentNullException("Guid cannot be null or empty.");
+        
         var entry = settings.CreateOrMoveEntry(guid, group);
 
-        entry.labels.Add("item");
+        entry.labels.Add(label);
         entry.address = pathToObject;
 
         return entry;
