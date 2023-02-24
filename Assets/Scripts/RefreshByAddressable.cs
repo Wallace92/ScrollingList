@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 
-
 public class RefreshByAddressable : IRefresh
 {
     private readonly ContentData m_contentData;
@@ -15,6 +14,7 @@ public class RefreshByAddressable : IRefresh
 
     public async Task<List<ItemData>> Refresh(ILoad loader)
     {
+        AssetDatabase.Refresh();
         AssetDatabase.SaveAssets();
         
         RefreshAddressableGroup();

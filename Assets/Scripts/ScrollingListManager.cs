@@ -10,7 +10,7 @@ public class ScrollingListManager : MonoBehaviour
     [SerializeField]
     private bool m_loadUsingAddressables;
     
-    private List<Item> scrollList = new List<Item>();
+    private List<Item> m_scrollList = new List<Item>();
 
     private ILoad Loader => m_loadUsingAddressables
         ? new LoadByAddressable(m_contentData.Label)
@@ -22,10 +22,19 @@ public class ScrollingListManager : MonoBehaviour
 
     private readonly ContentData m_contentData = new ContentData("Assets/Content/", "Content", "item");
 
+    public void Refresh() => RefreshAsync();
+
     private async void Start()
     {
         var itemsData = await Refresher.Refresh(Loader);
+        m_scrollList = InstantiateScrollList(itemsData);
 
+    }
+
+    private List<Item> InstantiateScrollList(List<ItemData> itemsData)
+    {
+        var scrollList = new List<Item>();
+        
         foreach (var itemData in itemsData)
         {
             var itemGameObject = Instantiate(ItemPrefab, ScrollRect.content.transform);
@@ -34,28 +43,20 @@ public class ScrollingListManager : MonoBehaviour
             
             scrollList.Add(item);
         }
-    }
 
-    public void Refresh() => RefreshAsync();
+        return scrollList;
+    }
 
     private async void RefreshAsync()
     {
          var itemsData = await Refresher.Refresh(Loader);
 
-         foreach (var item in scrollList)
+         foreach (var item in m_scrollList)
          {
              Destroy(item.gameObject);
          }
-         scrollList.Clear();
-         
-         
-         foreach (var itemData in itemsData)
-         {
-             var itemGameObject = Instantiate(ItemPrefab, ScrollRect.content.transform); 
-             var item = itemGameObject.GetComponent<Item>(); 
-             item.AssignData(itemData);
-             
-             scrollList.Add(item);
-         }
+         m_scrollList.Clear();
+
+         m_scrollList = InstantiateScrollList(itemsData);
     }
 }
