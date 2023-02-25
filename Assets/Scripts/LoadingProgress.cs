@@ -7,9 +7,6 @@ public class LoadingProgress : MonoBehaviour
     [SerializeField]
     private Image ProgressBarCounter;
 
-    [SerializeField]
-    private GameObject ProgressBar;
-    
     private static float m_loadingProgressValue;
 
     private static Action<float> LoadProgress;

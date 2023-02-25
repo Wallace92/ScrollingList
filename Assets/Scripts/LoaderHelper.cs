@@ -18,20 +18,49 @@ public static class LoaderHelper
             .ToList();
     }
 
-    public static async Task<Sprite> LoadSprite(string file)
-    {
-        AssetDatabase.ImportAsset(file);
-        
-        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D >(file);
-        return await CreateSprite(texture);
-    }
-
     public static async Task<Sprite> LoadSprite(IResourceLocation location)
     {
         var textureHandle  = Addressables.LoadAssetAsync<Texture2D>(location);
         var texture = await textureHandle.Task;
             
         return await CreateSprite(texture);
+    }
+    
+    private static TaskCompletionSource<Texture2D> m_taskCompletionSource;
+    private static string m_file;
+
+    public static async Task<Sprite> LoadSprite(string file)
+    {
+        m_file = file;
+        
+        AssetDatabase.ImportAsset(m_file);
+        Texture2D texture = await LoadTextureAsync();
+        
+        return await CreateSprite(texture);
+    }
+
+    private static async Task<Texture2D> LoadTextureAsync()
+    {
+        m_taskCompletionSource = new TaskCompletionSource<Texture2D>();
+        
+        EditorApplication.update += ImportAsset;  // import on the main thread
+        
+        Texture2D texture = await m_taskCompletionSource.Task;
+
+        return texture;
+    }
+
+   
+
+    private static void ImportAsset()
+    {
+        AssetDatabase.ImportAsset(m_file);
+        
+        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(m_file);
+        
+        m_taskCompletionSource.SetResult(texture);
+        
+        EditorApplication.update -= ImportAsset;
     }
 
     private static Task<Sprite> CreateSprite(Texture2D texture) => 
