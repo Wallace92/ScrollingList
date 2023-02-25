@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class Item : MonoBehaviour
 {
-    private IObjectPool<Item> objectPool;
+    private IObjectPool<Item> m_objectPool;
     public IObjectPool<Item> ObjectPool
     {
-        set => objectPool = value;
+        set => m_objectPool = value;
     }
 
     public TextMeshProUGUI NameTMP;

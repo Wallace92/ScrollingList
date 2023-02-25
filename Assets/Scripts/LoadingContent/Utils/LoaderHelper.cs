@@ -50,8 +50,6 @@ public static class LoaderHelper
         return texture;
     }
 
-   
-
     private static void ImportAsset()
     {
         AssetDatabase.ImportAsset(m_file);

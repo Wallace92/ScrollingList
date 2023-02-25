@@ -1,4 +1,4 @@
-﻿public struct ContentData
+﻿public readonly struct ContentData
 {
     public ContentData(string path, string groupName, string label)
     {
@@ -7,7 +7,7 @@
         Label = label;
     }
 
-    public string Path;
-    public string GroupName;
-    public string Label;
+    public readonly string Path;
+    public readonly string GroupName;
+    public readonly string Label;
 }

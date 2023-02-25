@@ -3,8 +3,18 @@ using UnityEngine;
 
 public class ScrollingListManager : MonoBehaviour
 {
+    [Header("Load Data")]
     [SerializeField]
     private bool m_loadUsingAddressables;
+    
+    [SerializeField]
+    private string m_dataPath = "Assets/Content/";
+    
+    [SerializeField]
+    private string m_groupName = "Content";
+    
+    [SerializeField]
+    private string m_label ="item";
     
     private List<Item> m_scrollList = new List<Item>();
 
@@ -18,11 +28,15 @@ public class ScrollingListManager : MonoBehaviour
 
     private ItemPool m_itemPool;
     
-    private readonly ContentData m_contentData = new ContentData("Assets/Content/", "Content", "item");
+    private ContentData m_contentData;
     
     public void Refresh() => RefreshAsync();
 
-    private void Awake() => m_itemPool = gameObject.GetComponent<ItemPool>();
+    private void Awake()
+    {
+        m_contentData = new ContentData(m_dataPath, m_groupName, m_label);
+        m_itemPool = gameObject.GetComponent<ItemPool>();
+    }
 
     private async void Start()
     {
@@ -30,7 +44,6 @@ public class ScrollingListManager : MonoBehaviour
         
         var itemsData = await Refresher.Refresh(Loader);
         m_scrollList = InstantiateScrollList(itemsData);
-        
     }
 
     private List<Item> InstantiateScrollList(List<ItemData> itemsData)
@@ -57,7 +70,6 @@ public class ScrollingListManager : MonoBehaviour
              Destroy(item.gameObject);
          
          m_scrollList.Clear();
-         
          m_scrollList = InstantiateScrollList(itemsData);
     }
 }

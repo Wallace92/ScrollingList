@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class ItemData
 {
@@ -10,7 +9,7 @@ public class ItemData
         Image = image;
     }
 
-    public string Name;
-    public string Time;
-    public Sprite Image;
+    public readonly string Name;
+    public readonly string Time;
+    public readonly Sprite Image;
 }
