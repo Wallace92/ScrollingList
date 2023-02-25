@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class ScrollingListManager : MonoBehaviour
 {
-    [Header("Load Data")]
+    [Header("Load Data Type")]
     [SerializeField]
     private bool m_loadUsingAddressables;
     
+    [Header("Data Path Section")]
     [SerializeField]
     private string m_dataPath = "Assets/Content/";
     
+    [Header("Addressables")]
     [SerializeField]
     private string m_groupName = "Content";
     

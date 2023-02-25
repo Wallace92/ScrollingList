@@ -32,6 +32,21 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - item
+  - m_GUID: 4421596865d622741904df63f662d538
+    m_Address: Assets/Content/houseSprite.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - item
+  - m_GUID: 9e4213c1baa69e84093984ca59936155
+    m_Address: Assets/Content/rider.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - item
+  - m_GUID: c3100e4895959ba4385ffcc6b13f8bdc
+    m_Address: Assets/Content/meat.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - item
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c52f2e2dcf478f14b97cc5fb6a2fd847, type: 2}
   m_SchemaSet:
