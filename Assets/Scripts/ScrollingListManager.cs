@@ -26,6 +26,7 @@ public class ScrollingListManager : MonoBehaviour
 
     private async void Start()
     {
+        LoadingProgress.ProgressBarVisibility.Invoke(true);
         var itemsData = await Refresher.Refresh(Loader);
         m_scrollList = InstantiateScrollList(itemsData);
     }
@@ -46,8 +47,9 @@ public class ScrollingListManager : MonoBehaviour
 
     private async void RefreshAsync()
     {
+         LoadingProgress.ProgressBarVisibility.Invoke(true);
          var itemsData = await Refresher.Refresh(Loader);
-
+         
          foreach (var item in m_scrollList)
              Destroy(item.gameObject);
          

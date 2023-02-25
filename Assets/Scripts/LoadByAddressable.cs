@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class LoadByAddressable : ILoad
 {
@@ -13,7 +14,9 @@ public class LoadByAddressable : ILoad
 
     public async Task<List<ItemData>> LoadItemsData()
     {
-        var locations = await Addressables.LoadResourceLocationsAsync(m_label).Task;
+        var locations = await Addressables
+            .LoadResourceLocationsAsync(m_label)
+            .Task;
         
         var itemsData = new List<ItemData>();
 
@@ -21,21 +24,28 @@ public class LoadByAddressable : ILoad
 
         foreach (var location in locations)
         {
-            var path = location.InternalId;
-            var filePath = Application.dataPath + "/" + path.Replace("Assets", "");
-            var fileInfo = new FileInfo(filePath);
-           
-            var textureHandle  = Addressables.LoadAssetAsync<Texture2D>(location);
-            var texture = await textureHandle.Task;
+            var fileInfo = GetFileInfo(location);
+
+            var sprite = await LoaderHelper.LoadSprite(location);
+
+            itemsData.Add(GetItemData(today, fileInfo, sprite));
             
-            var difference = (today - fileInfo.CreationTime).ToString("dd\\:hh\\:mm");
-            var sprite = await LoaderHelper.CreateSprite(texture);
-            
-            var itemData = new ItemData(fileInfo.Name, difference, sprite);
-            
-            itemsData.Add(itemData);
+            LoadingProgress.SetProgressBarValues(locations.Count, locations.IndexOf(location) + 1);
         }
 
         return itemsData;
+    }
+
+    private ItemData GetItemData(DateTime today, FileInfo fileInfo, Sprite sprite)
+    {
+        var difference = (today - fileInfo.CreationTime).ToString("dd\\:hh\\:mm");
+        return new ItemData(fileInfo.Name, difference, sprite);
+    }
+
+    private FileInfo GetFileInfo(IResourceLocation location)
+    {
+        var path = location.InternalId;
+        var filePath = Application.dataPath + "/" + path.Replace("Assets", "");
+        return new FileInfo(filePath);
     }
 }

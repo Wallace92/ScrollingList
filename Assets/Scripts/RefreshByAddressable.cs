@@ -53,8 +53,7 @@ public class RefreshByAddressable : IRefresh
 
     private AddressableAssetEntry AddEntry(string pathToObject, AddressableAssetGroup group, AddressableAssetSettings settings)
     {
-        //important for guid empty possibility
-        AssetDatabase.Refresh();
+        AssetDatabase.Refresh(); //important for guid empty possibility
         
         var guid = AssetDatabase.AssetPathToGUID(pathToObject, AssetPathToGUIDOptions.OnlyExistingAssets);
 

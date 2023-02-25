@@ -5,13 +5,12 @@ using UnityEngine.UI;
 
 public class Item : MonoBehaviour
 {
+    private IObjectPool<Item> objectPool;
     public IObjectPool<Item> ObjectPool
     {
         set => objectPool = value;
     }
-    
-    private IObjectPool<Item> objectPool;
-    
+
     public TextMeshProUGUI NameTMP;
     public TextMeshProUGUI TimeTMP;
     public Image Image;
