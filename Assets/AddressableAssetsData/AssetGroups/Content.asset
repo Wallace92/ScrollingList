@@ -17,12 +17,18 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 0cf1267c447a7ea42afdf03612840b26
   m_SerializeEntries:
-  - m_GUID: 43810bd0298fc7049be0a751ab5ebdda
-    m_Address: Assets/Content/lab01.png
+  - m_GUID: 7a1bcfa474abb744aa6269200f9d8017
+    m_Address: Assets/Content/builder.png
     m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 509a76604efbbae4da82c3c66432a872
-    m_Address: Assets/Content/lab02.png
+    m_SerializedLabels:
+    - item
+  - m_GUID: 3223ab6ebef959e4084936f1e3f6378b
+    m_Address: Assets/Content/Explorer.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - item
+  - m_GUID: 88098f5b48c19fc43ae274d664ef3ff2
+    m_Address: Assets/Content/king.png
     m_ReadOnly: 0
     m_SerializedLabels:
     - item
