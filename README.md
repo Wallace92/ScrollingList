@@ -4,6 +4,8 @@ This project is a Unity-based application that allows you to display a scrolling
 names, and the time since their creation. In addition, this project also allows you to add another 
 PNG file during runtime and refresh the content of the scrolling list. A progress bar is also included to inform you about the loading progress.
 
+<img src="https://studygamedev.com/wp-content/uploads/2023/02/ScrollingList.png" width="300" height="300">
+
 ## Features
 Displays a scrolling list of items with appropriate PNG images, names, and the time since their creation.
 Allows adding another PNG file during runtime.
